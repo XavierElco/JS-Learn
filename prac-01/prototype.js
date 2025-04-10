@@ -10,7 +10,7 @@ console.log(person2.name) // chengming
 // Person -> Person.prototype -> Object.prototype
 
 
-
+ 
 function Person1() {}
 var person3 = new Person1();
 console.log(person3.__proto__===Person1.prototype);
