@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>MVC demo</title>
+</head>
+<body>
+    <h1>MVC Demo</h1>
+    <div id="app">
+            <div id="num">0</div>
+            <div>
+                <button id="btnAdd">++</button>
+                <button id="btnSub">--</button>
+            </div>
+        <script>
+            // model处理业务场景的运行逻辑
+            const MY_MVC = {}
+
+            MY_MVC.Model = function() {
+                let count = 0;
+                const views = [];
+
+                this.add = function() {
+                    count++;
+                    this.notify()
+                }
+
+                this.sub = function() {
+                    count--;
+                    this.notify()
+                }
+
+                this.getVal = function() {
+                    return count;
+                }
+
+                this.registry = function(view) {
+                    views.push(view);
+                }
+
+                const _this = this
+                this.notify = function() {
+                    views.forEach(view => {
+                        view.render(_this)
+                    })
+                }
+            }
+
+                // view负责处理时间监听和显示值
+                MY_MVC.View = function(ctrl) {
+
+                    const eleNum = document.getElementById('num')
+                    const btnAdd = document.getElementById('btnAdd')
+                    const btnSub = document.getElementById('btnSub')
+
+                    btnAdd.addEventListener('click', function() {
+                        ctrl.add()
+                    })
+                    btnSub.addEventListener('click', function() {
+                        ctrl.sub()
+                    })
+
+                    this.render = function(model) {
+                        eleNum.innerHTML = model.getVal();
+                    }                
+                }
+
+                // Controller链接View与Model
+                MY_MVC.Controller = function() {
+                    let model, view
+                    const _this = this
+
+                    this.init = function() {
+                        model = new MY_MVC.Model();
+                        view = new MY_MVC.View(_this);
+                        model.registry(view)
+                        model.notify()
+                    }
+
+                    this.add = function() {
+                        model.add()
+                    }
+
+                    this.sub = function() {
+                        model.sub()
+                    }
+
+                    this.getVal = function() {
+                        return model.getVal()
+                    }
+                }
+
+                const controller = new MY_MVC.Controller();
+                controller.init();
+        </script>
+    </div>
+</body>
+</html>
