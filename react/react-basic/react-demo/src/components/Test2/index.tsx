@@ -7,3 +7,4 @@ window.addEventListener('on-Card', (e) => {
 
 return <div className="card"></div>
 }
+
