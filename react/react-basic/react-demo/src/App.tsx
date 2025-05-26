@@ -1,21 +1,38 @@
-
-import Card from './components/Card'
-import Test from './components/Test'
-import Test2 from './components/Test2'
+import React, { useState,  useTransition } from 'react'
+import { Input, List } from 'antd'
 import './App.css'
-
-const fn = (params: string) => {
-  console.log("孩子组件传给父母组件", params)
+interface Iitem {
+  id: string;
+  name: string;
+  address:string;
+  age: number;
 }
+
 function App() {
+  const [inputValue, setInputValue] = useState('');
+  const [list, setList] = useState<Iitem[]>([]);
+  const [isPending, startTransition] = useTransition();
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setInputValue(value);
+
+    fetch('/api/mock/list?key=' + value)
+      .then((res) => res.json())
+      .then((res) => {
+        // 为了优化用户体验，我们将结果更新放在 startTransition 函数中，
+        // 这样 React 可以在处理更新时保持输入框的响应性。
+        startTransition(() => {
+          setList(res.list)
+        })
+      })
+  }
   return (
     <>
-
-      <Card callBack={fn} title="我是第一张卡片"></Card>
-      <Card title="我是第二张卡片"></Card>
-      <Card title="我是第三张卡片"></Card>
-      <Test></Test>
-      <Test2></Test2>
+      <Input value={inputValue} onChange={handleChange} />
+      {isPending && <div>loading...</div>}
+      <List dataSource={list} renderItem={(item) => <List.Item>{item.address}</List.Item>} />
+    
     </>
   )
 }
